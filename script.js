@@ -1,5 +1,5 @@
-// 已配置你的腾讯文档在线表格链接（确认是sheet开头的普通表格）
-const TENCENT_URL = "https://docs.qq.com/sheet/DUEdqR2xkVk5Ta0p0?tab=BB08J2";
+// 已配置你的腾讯文档在线表格链接（适配Vercel跨域代理，无需修改）
+const TENCENT_URL = "/tencent/sheet/DUEdqR2xkVk5Ta0p0?tab=BB08J2";
 let calendar;
 let reserveList = [];
 
@@ -33,13 +33,18 @@ function bindNavBtn() {
   });
 }
 
-// 从腾讯文档获取预约数据
+// 从腾讯文档获取预约数据（适配Vercel代理）
 async function getTencentEvents() {
   try {
-    // 适配腾讯文档sheet链接的导出地址
+    // 适配腾讯文档sheet链接的导出地址+Vercel代理
     const exportUrl = TENCENT_URL.replace('/sheet/', '/xlsx/export/');
-    const res = await fetch(exportUrl, { timeout: 5000 });
-    if (!res.ok) throw new Error('腾讯文档链接无效/权限不足');
+    const res = await fetch(exportUrl, { 
+      timeout: 8000,
+      headers: {
+        'Accept': 'application/octet-stream'
+      }
+    });
+    if (!res.ok) throw new Error('腾讯文档链接无效/权限不足，请检查表格权限和链接');
     const arrayBuffer = await res.arrayBuffer();
     // 解析Excel数据
     const workbook = XLSX.read(arrayBuffer, { type: 'array' });
@@ -59,7 +64,7 @@ async function getTencentEvents() {
   }
 }
 
-// 向腾讯文档添加预约数据
+// 向腾讯文档添加预约数据（适配Vercel代理）
 async function addTencentEvent(eventData) {
   try {
     const events = await getTencentEvents();
@@ -71,9 +76,16 @@ async function addTencentEvent(eventData) {
     const csv = `${eventData.id},${eventData.title},${eventData.start},${eventData.end},${eventData.allDay}\n`;
     const formData = new FormData();
     formData.append('file', new Blob([csv], { type: 'text/csv' }), 'reserve.csv');
-    // 适配腾讯文档sheet链接的导入地址（追加模式）
+    // 适配腾讯文档sheet链接的导入地址（追加模式）+Vercel代理
     const importUrl = TENCENT_URL.replace('/sheet/', '/import/csv/') + '?mode=append';
-    const res = await fetch(importUrl, { method: 'POST', body: formData, timeout: 5000 });
+    const res = await fetch(importUrl, { 
+      method: 'POST', 
+      body: formData, 
+      timeout: 8000,
+      headers: {
+        'Accept': 'application/json'
+      }
+    });
     return res.ok;
   } catch (e) {
     alert('提交预约失败：' + e.message);
@@ -111,7 +123,7 @@ function initCalendar() {
         }
         calendar.unselect();
       },
-      // 拖拽修改预约日期
+      // 拖拽修改预约日期（适配Vercel代理）
       eventDrop: async function(info) {
         const events = await getTencentEvents();
         const updatedEvents = events.map(e => e.id === info.event.id ? { ...e, start: info.event.startStr, end: info.event.endStr } : e);
@@ -123,7 +135,11 @@ function initCalendar() {
         const formData = new FormData();
         formData.append('file', new Blob([arrayBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), 'reserve.xlsx');
         const importUrl = TENCENT_URL.replace('/sheet/', '/import/xlsx/') + '?mode=overwrite';
-        const res = await fetch(importUrl, { method: 'POST', body: formData, timeout: 5000 });
+        const res = await fetch(importUrl, { 
+          method: 'POST', 
+          body: formData, 
+          timeout: 8000 
+        });
         if (res.ok) {
           calendar.refetchEvents();
           alert('预约日期修改成功！');
@@ -131,7 +147,7 @@ function initCalendar() {
           info.revert(); // 失败则还原拖拽
         }
       },
-      // 点击事件删除预约
+      // 点击事件删除预约（适配Vercel代理）
       eventClick: async function(info) {
         if (confirm('确认删除该预约吗？')) {
           const events = await getTencentEvents();
@@ -144,7 +160,11 @@ function initCalendar() {
           const formData = new FormData();
           formData.append('file', new Blob([arrayBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), 'reserve.xlsx');
           const importUrl = TENCENT_URL.replace('/sheet/', '/import/xlsx/') + '?mode=overwrite';
-          const res = await fetch(importUrl, { method: 'POST', body: formData, timeout: 5000 });
+          const res = await fetch(importUrl, { 
+            method: 'POST', 
+            body: formData, 
+            timeout: 8000 
+          });
           if (res.ok) {
             calendar.refetchEvents();
             renderReserveList(); // 刷新管理列表
@@ -235,7 +255,7 @@ function renderReserveList() {
   listEl.innerHTML = html;
 }
 
-// 全局删除预约方法
+// 全局删除预约方法（适配Vercel代理）
 window.delEvent = async function(id) {
   if (confirm('确认删除该预约吗？删除后不可恢复！')) {
     const events = await getTencentEvents();
@@ -248,7 +268,11 @@ window.delEvent = async function(id) {
     const formData = new FormData();
     formData.append('file', new Blob([arrayBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), 'reserve.xlsx');
     const importUrl = TENCENT_URL.replace('/sheet/', '/import/xlsx/') + '?mode=overwrite';
-    const res = await fetch(importUrl, { method: 'POST', body: formData, timeout: 5000 });
+    const res = await fetch(importUrl, { 
+      method: 'POST', 
+      body: formData, 
+      timeout: 8000 
+    });
     if (res.ok) {
       reserveList = await getTencentEvents();
       calendar.refetchEvents(); // 刷新日历
