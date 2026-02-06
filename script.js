@@ -1,5 +1,5 @@
 // 已配置你的腾讯文档在线表格链接（适配Vercel跨域代理，无需修改）
-const TENCENT_URL = "/tencent/sheet/DUEdqR2xkVk5Ta0p0?tab=BB08J2";
+const TENCENT_URL = "https://docs.qq.com/sheet/DV0JTVEJNcnFoVnNk";
 let calendar;
 let reserveList = [];
 
