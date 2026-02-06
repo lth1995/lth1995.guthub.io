@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/tencent/(.*)",
+      "destination": "https://docs.qq.com/$1"
+    }
+  ]
+}
