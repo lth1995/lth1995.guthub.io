@@ -1,5 +1,5 @@
 // ################### 唯一需要修改的地方 ###################
-const TENCENT_DOC_URL = "https://docs.qq.com/d/DV01wcndLZGVCT3RB"; // 替换成https://docs.qq.com/d/xxxxxxx
+const TENCENT_DOC_URL = "https://docs.qq.com/sheet/DV1NKeHJ2b2p0dVFM"; // 替换成https://docs.qq.com/d/xxxxxxx
 // ###########################################################
 let calendar;
 // 初始化表格数据（确保id自增）

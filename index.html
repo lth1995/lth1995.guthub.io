@@ -1,204 +1,116 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>千寻预约系统- 本地版</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>宠物预约系统-全员同步版</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/main.min.css">
+  <link rel="stylesheet" href="style.css">
+  <!-- 修复刷新按钮样式 -->
+  <style>
+    .fc-refreshBtn-button {background: #2d9cdb; color: #fff; border: none; border-radius: 4px; padding: 0 8px;}
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Microsoft YaHei", sans-serif; }
+    body { background: #f5f7fa; padding: 10px; }
+    .container { max-width: 1400px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.05); }
+    .header { text-align: center; margin-bottom: 20px; }
+    .nav { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+    .nav-btn { padding: 8px 15px; border: 1px solid #eee; border-radius: 6px; background: #fff; color: #333; cursor: pointer; font-size: 14px; transition: all 0.3s; }
+    .nav-btn.active { background: #2d9cdb; color: #fff; border-color: #2d9cdb; }
+    .module { display: none; }
+    .module.active { display: block; }
+    #calendar { width: 100%; }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <header class="header">
-            <h1>千寻动物医院系统</h1>
-            <div class="nav">
-                <button class="nav-btn active" id="reserveBtn">预约服务</button>
-                <button class="nav-btn" id="myReserveBtn">我的预约</button>
-                <button class="nav-btn" id="adminBtn">管理后台</button>
-            </div>
-        </header>
-
-        <section class="module active" id="reserveModule">
-            <form class="reserve-form" id="reserveForm">
-                <div class="form-item">
-                    <label>宠物姓名 <span class="required">*</span></label>
-                    <input type="text" id="petName" placeholder="请填写宠物名字" required>
-                </div>
-                <div class="form-item">
-                    <label>宠物品种 <span class="required">*</span></label>
-                    <select id="petBreed" required>
-                        <option value="">请选择宠物品种</option>
-                        <!-- 🐶 犬种 -->
-                        <optgroup label="🐶 小型犬">
-                            <option value="柯基">柯基</option>
-                            <option value="泰迪/贵宾">泰迪/贵宾</option>
-                            <option value="比熊">比熊</option>
-                            <option value="博美">博美</option>
-                            <option value="吉娃娃">吉娃娃</option>
-                            <option value="雪纳瑞">雪纳瑞</option>
-                            <option value="约克夏">约克夏</option>
-                            <option value="法斗">法斗</option>
-                            <option value="英斗">英斗</option>
-                            <option value="巴哥">巴哥</option>
-                            <option value="小鹿犬">小鹿犬</option>
-                            <option value="马尔济斯">马尔济斯</option>
-                        </optgroup>
-                        <optgroup label="🐶 中型犬">
-                            <option value="边牧">边牧</option>
-                            <option value="哈士奇">哈士奇</option>
-                            <option value="萨摩耶">萨摩耶</option>
-                            <option value="柴犬">柴犬</option>
-                            <option value="松狮">松狮</option>
-                            <option value="秋田犬">秋田犬</option>
-                            <option value="可卡犬">可卡犬</option>
-                        </optgroup>
-                        <optgroup label="🐶 大型犬">
-                            <option value="金毛">金毛</option>
-                            <option value="拉布拉多">拉布拉多</option>
-                            <option value="阿拉斯加">阿拉斯加</option>
-                            <option value="德牧">德牧</option>
-                            <option value="罗威纳">罗威纳</option>
-                            <option value="杜宾">杜宾</option>
-                        </optgroup>
-                        <!-- 🐱 猫品种 -->
-                        <optgroup label="🐱 常见猫种">
-                            <option value="布偶猫">布偶猫</option>
-                            <option value="英短猫">英短猫</option>
-                            <option value="美短猫">美短猫</option>
-                            <option value="蓝猫">蓝猫</option>
-                            <option value="橘猫">橘猫</option>
-                            <option value="暹罗猫">暹罗猫</option>
-                            <option value="金渐层">金渐层</option>
-                            <option value="银渐层">银渐层</option>
-                            <option value="加菲猫">加菲猫</option>
-                            <option value="田园猫">田园猫</option>
-                            <option value="德文卷毛猫">德文卷毛猫</option>
-                        </optgroup>
-                        <!-- 其他 -->
-                        <optgroup label="🐾 其他/混血">
-                            <option value="串串/混血犬">串串/混血犬</option>
-                            <option value="其他小众猫种">其他小众猫种</option>
-                            <option value="其他宠物">其他宠物</option>
-                        </optgroup>
-                    </select>
-                </div>
-                <div class="form-item">
-                    <label>联系电话 <span class="required">*</span></label>
-                    <input type="tel" id="userPhone" placeholder="请填写手机号" required>
-                </div>
-                <div class="form-item">
-                    <label>预约服务 <span class="required">*</span></label>
-                    <select id="serviceType" required>
-                        <option value="">请选择服务</option>
-                        <option value="宠物洗护">宠物洗护</option>
-                        <option value="美容">美容</option>
-                        <option value="诊疗">诊疗</option>
-                        <option value="疫苗">疫苗</option>
-                        <option value="驱虫">驱虫</option>
-                    </select>
-                </div>
-                <!-- 洗护人员 -->
-                <div class="form-item">
-                    <label>洗护人员 <span class="required">*</span></label>
-                    <select id="washStaff" required>
-                        <option value="">请选择洗护人员</option>
-                        <option value="姚梦蝶">姚梦蝶</option>
-                        <option value="李天昊">李天昊</option>
-                        <option value="刘贝">刘贝</option>
-                        <option value="庄晓雷">庄晓雷</option>
-                        <option value="杨波">杨波</option>
-                    </select>
-                </div>
-                <!-- 洗护时长 -->
-                <div class="form-item">
-                    <label>洗护时长 <span class="required">*</span></label>
-                    <select id="washTime" required>
-                        <option value="">请选择洗护时长</option>
-                        <option value="45分钟">45分钟（小型宠）</option>
-                        <option value="60分钟">60分钟（中型宠）</option>
-                        <option value="120分钟">120分钟（大型宠）</option>
-                        <option value="90分钟">90分钟（短毛猫）</option>
-                        <option value="120分钟">120分钟（长毛猫）</option>
-                    </select>
-                </div>
-                <!-- 预约日期+精准时间（10:00-19:00，30分钟一档） -->
-                <div class="form-item double">
-                    <div>
-                        <label>预约日期 <span class="required">*</span></label>
-                        <input type="date" id="reserveDate" required>
-                    </div>
-                    <div>
-                        <label>预约时间 <span class="required">*</span></label>
-                        <select id="reserveTime" required>
-                            <option value="">选择预约时间</option>
-                            <option value="10:00">10:00</option>
-                            <option value="10:30">10:30</option>
-                            <option value="11:00">11:00</option>
-                            <option value="11:30">11:30</option>
-                            <option value="12:00">12:00</option>
-                            <option value="12:30">12:30</option>
-                            <option value="13:00">13:00</option>
-                            <option value="13:30">13:30</option>
-                            <option value="14:00">14:00</option>
-                            <option value="14:30">14:30</option>
-                            <option value="15:00">15:00</option>
-                            <option value="15:30">15:30</option>
-                            <option value="16:00">16:00</option>
-                            <option value="16:30">16:30</option>
-                            <option value="17:00">17:00</option>
-                            <option value="17:30">17:30</option>
-                            <option value="18:00">18:00</option>
-                            <option value="18:30">18:30</option>
-                            <option value="19:00">19:00</option>
-                            <option value="19:30">19:30</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-item">
-                    <label>备注</label>
-                    <textarea id="remark" placeholder="如：宠物怕生/需特殊护理等"></textarea>
-                </div>
-                <button type="submit" class="submit-btn">提交预约</button>
-            </form>
-        </section>
-
-        <!-- 我的预约模块 -->
-        <section class="module" id="myReserveModule">
-            <div class="empty-tip" id="myEmptyTip">暂无预约记录</div>
-            <div class="reserve-list" id="myReserveList"></div>
-        </section>
-
-        <!-- 管理后台模块：拖动式可视化统计 -->
-        <section class="module" id="adminModule">
-<div class="admin-login" id="adminLogin">
-  <button class="login-btn" id="loginBtn">进入管理后台</button>
-</div>
-            <div class="admin-content" id="adminContent" style="display: none;">
-                <!-- 拖动式预约量状态图 -->
-                <div class="stats-card">
-                    <h3>服务人员时间段预约量状态图</h3>
-                    <div class="date-select">
-                        <label>选择查询日期：</label>
-                        <input type="date" id="statsDate" required>
-                        <button class="query-btn" id="queryStatsBtn">查询</button>
-                    </div>
-                    <div class="stats-tips">
-                        <span>💡 左键拖动：占用时段（标红）</span>
-                        <span>💡 右键拖动：释放时段（标绿）</span>
-                    </div>
-                    <div class="stats-table" id="statsTable"></div>
-                    <div class="stats-legend">
-                        <span><i style="background: #27ae60;"></i> 无预约（可约）</span>
-                        <span><i style="background: #e74c3c;"></i> 已占用（不可约）</span>
-                    </div>
-                </div>
-                <!-- 全部预约记录 -->
-                <h3 style="margin-top: 30px;">全部预约记录</h3>
-                <div class="empty-tip" id="adminEmptyTip">暂无任何预约记录</div>
-                <div class="reserve-list" id="adminReserveList"></div>
-            </div>
-        </section>
+  <div class="container">
+    <div class="header">
+      <h1>🐾 宠物预约系统-全员同步版</h1>
     </div>
+    <!-- 恢复预约/管理面板按钮 -->
+    <div class="nav">
+      <button class="nav-btn active" id="calendarBtn">日历视图</button>
+      <button class="nav-btn" id="reserveBtn">预约服务</button>
+      <button class="nav-btn" id="manageBtn">预约管理</button>
+    </div>
+    <!-- 日历视图（核心） -->
+    <div class="module active" id="calendarModule">
+      <div id="calendar"></div>
+    </div>
+    <!-- 预约表单面板（恢复原功能） -->
+    <div class="module" id="reserveModule">
+      <form id="reserveForm" class="reserve-form">
+        <div class="form-item">
+          <label>宠物名称 <span class="required">*</span></label>
+          <input type="text" id="petName" placeholder="请输入宠物名字" required>
+        </div>
+        <div class="form-item">
+          <label>服务类型 <span class="required">*</span></label>
+          <select id="serviceType" required>
+            <option value="">请选择服务</option>
+            <option value="洗澡">洗澡</option>
+            <option value="美容">美容</option>
+            <option value="驱虫">驱虫</option>
+            <option value="诊疗">诊疗</option>
+            <option value="寄养">寄养</option>
+          </select>
+        </div>
+        <div class="form-item">
+          <label>联系电话 <span class="required">*</span></label>
+          <input type="tel" id="userPhone" placeholder="请输入联系电话" required>
+        </div>
+        <div class="form-item">
+          <label>预约师傅 <span class="required">*</span></label>
+          <select id="washStaff" required>
+            <option value="">请选择师傅</option>
+            <option value="姚梦蝶">姚梦蝶</option>
+            <option value="李天昊">李天昊</option>
+            <option value="刘贝">刘贝</option>
+            <option value="庄晓雷">庄晓雷</option>
+            <option value="杨波">杨波</option>
+          </select>
+        </div>
+        <div class="form-item">
+          <label>预约日期 <span class="required">*</span></label>
+          <input type="date" id="reserveDate" required>
+        </div>
+        <div class="form-item">
+          <label>预约时段 <span class="required">*</span></label>
+          <select id="reserveTime" required>
+            <option value="">请选择时段</option>
+            <option value="10:00">10:00</option>
+            <option value="10:30">10:30</option>
+            <option value="11:00">11:00</option>
+            <option value="11:30">11:30</option>
+            <option value="13:00">13:00</option>
+            <option value="13:30">13:30</option>
+            <option value="14:00">14:00</option>
+            <option value="14:30">14:30</option>
+            <option value="15:00">15:00</option>
+            <option value="15:30">15:30</option>
+            <option value="16:00">16:00</option>
+            <option value="16:30">16:30</option>
+            <option value="17:00">17:00</option>
+          </select>
+        </div>
+        <div class="form-item">
+          <label>备注信息</label>
+          <textarea id="remark" placeholder="请输入备注（选填）" rows="3"></textarea>
+        </div>
+        <button type="submit" class="submit-btn">提交预约</button>
+      </form>
+    </div>
+    <!-- 预约管理面板（查看/删除所有预约） -->
+    <div class="module" id="manageModule">
+      <h3>📋 全员预约管理（刷新后显示最新）</h3>
+      <button id="refreshManageBtn" class="submit-btn" style="margin:10px 0;">刷新最新预约</button>
+      <div id="reserveList" class="reserve-list"></div>
+    </div>
+  </div>
 
-    <script src="script.js"></script>
+  <!-- 引入依赖库 -->
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/main.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/locales/zh-cn.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
