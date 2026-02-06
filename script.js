@@ -1,5 +1,5 @@
 // ################### 唯一需要修改的地方 ###################
-const FEISHU_URL = "https://ucn589zppjnx.feishu.cn/wiki/GZEIwjZ8XiQ2rtkrRMWctw0KnPg?from=from_copylink"; // 替换为你的飞书多维表格链接（直接复制分享的链接即可）
+const FEISHU_URL = "https://ucn589zppjnx.feishu.cn/wiki/KtsmwEKwFipeSXkjHBWcZ8D3nnu?from=from_copylink"; // 替换为你的飞书多维表格链接（直接复制分享的链接即可）
 // ###########################################################
 let calendar;
 let reserveList = []; // 预约列表缓存，国内毫秒级读取
