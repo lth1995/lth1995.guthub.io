@@ -3,22 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>宠物预约系统-全员同步版</title>
+  <title>宠物预约系统-全员同步版（飞书极速）</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/main.min.css">
   <link rel="stylesheet" href="style.css">
-  <!-- 修复刷新按钮样式 -->
+  <!-- 样式修复+适配，无需修改 -->
   <style>
-    .fc-refreshBtn-button {background: #2d9cdb; color: #fff; border: none; border-radius: 4px; padding: 0 8px;}
+    .fc-refreshBtn-button {background: #007fff; color: #fff; border: none; border-radius: 4px; padding: 0 8px;}
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Microsoft YaHei", sans-serif; }
     body { background: #f5f7fa; padding: 10px; }
     .container { max-width: 1400px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.05); }
     .header { text-align: center; margin-bottom: 20px; }
     .nav { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
     .nav-btn { padding: 8px 15px; border: 1px solid #eee; border-radius: 6px; background: #fff; color: #333; cursor: pointer; font-size: 14px; transition: all 0.3s; }
-    .nav-btn.active { background: #2d9cdb; color: #fff; border-color: #2d9cdb; }
+    .nav-btn.active { background: #007fff; color: #fff; border-color: #007fff; }
     .module { display: none; }
     .module.active { display: block; }
     #calendar { width: 100%; }
+    .reserve-form { max-width: 600px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; }
+    .form-item { display: flex; flex-direction: column; gap: 5px; }
+    .form-item label { font-size: 14px; color: #333; font-weight: 500; }
+    .form-item .required { color: red; }
+    .form-item input, .form-item select, .form-item textarea { padding: 8px 10px; border: 1px solid #eee; border-radius: 6px; outline: none; font-size: 14px; }
+    .form-item input:focus, .form-item select:focus, .form-item textarea:focus { border-color: #007fff; }
+    .submit-btn { padding: 10px; background: #007fff; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; }
+    .reserve-list { max-width: 1000px; margin: 0 auto; gap: 10px; display: flex; flex-direction: column; }
+    .reserve-item { padding: 15px; border: 1px solid #eee; border-radius: 6px; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; }
+    .reserve-item .info { display: flex; flex-direction: column; gap: 5px; font-size: 14px; }
+    .reserve-item .del-btn { padding: 5px 10px; background: red; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; }
+    .empty-tip { text-align: center; padding: 20px; color: #999; font-size: 14px; }
   </style>
 </head>
 <body>
@@ -26,22 +38,22 @@
     <div class="header">
       <h1>🐾 宠物预约系统-全员同步版</h1>
     </div>
-    <!-- 恢复预约/管理面板按钮 -->
+    <!-- 面板切换按钮：日历/预约/管理 -->
     <div class="nav">
       <button class="nav-btn active" id="calendarBtn">日历视图</button>
       <button class="nav-btn" id="reserveBtn">预约服务</button>
       <button class="nav-btn" id="manageBtn">预约管理</button>
     </div>
-    <!-- 日历视图（核心） -->
+    <!-- 日历视图（核心，支持拖动/删除/刷新） -->
     <div class="module active" id="calendarModule">
       <div id="calendar"></div>
     </div>
-    <!-- 预约表单面板（恢复原功能） -->
+    <!-- 预约表单面板（带必填项，操作简单） -->
     <div class="module" id="reserveModule">
       <form id="reserveForm" class="reserve-form">
         <div class="form-item">
           <label>宠物名称 <span class="required">*</span></label>
-          <input type="text" id="petName" placeholder="请输入宠物名字" required>
+          <input type="text" id="petName" placeholder="请输入宠物名字（如：旺财）" required>
         </div>
         <div class="form-item">
           <label>服务类型 <span class="required">*</span></label>
@@ -56,17 +68,16 @@
         </div>
         <div class="form-item">
           <label>联系电话 <span class="required">*</span></label>
-          <input type="tel" id="userPhone" placeholder="请输入联系电话" required>
+          <input type="tel" id="userPhone" placeholder="请输入联系电话（如：13800138000）" required>
         </div>
         <div class="form-item">
           <label>预约师傅 <span class="required">*</span></label>
           <select id="washStaff" required>
             <option value="">请选择师傅</option>
-            <option value="姚梦蝶">姚梦蝶</option>
-            <option value="李天昊">李天昊</option>
-            <option value="刘贝">刘贝</option>
-            <option value="庄晓雷">庄晓雷</option>
-            <option value="杨波">杨波</option>
+            <option value="张师傅">张师傅</option>
+            <option value="李师傅">李师傅</option>
+            <option value="王师傅">王师傅</option>
+            <option value="陈师傅">陈师傅</option>
           </select>
         </div>
         <div class="form-item">
@@ -94,23 +105,23 @@
         </div>
         <div class="form-item">
           <label>备注信息</label>
-          <textarea id="remark" placeholder="请输入备注（选填）" rows="3"></textarea>
+          <textarea id="remark" placeholder="请输入备注（选填，如：大型犬/需剪毛）" rows="3"></textarea>
         </div>
         <button type="submit" class="submit-btn">提交预约</button>
       </form>
     </div>
-    <!-- 预约管理面板（查看/删除所有预约） -->
+    <!-- 预约管理面板（全员数据，支持刷新/删除） -->
     <div class="module" id="manageModule">
-      <h3>📋 全员预约管理（刷新后显示最新）</h3>
-      <button id="refreshManageBtn" class="submit-btn" style="margin:10px 0;">刷新最新预约</button>
+      <h3 style="text-align:center; margin-bottom:10px;">📋 全员预约管理（飞书实时同步）</h3>
+      <button id="refreshManageBtn" class="submit-btn" style="margin:0 auto 15px; display:block; width:150px;">刷新最新预约</button>
       <div id="reserveList" class="reserve-list"></div>
     </div>
   </div>
 
-  <!-- 引入依赖库 -->
+  <!-- 引入所有依赖库（国内CDN，极速加载） -->
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/main.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/locales/zh-cn.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
